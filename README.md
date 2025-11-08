@@ -5,18 +5,19 @@
 
 ## 🌟 Sobre o Projeto
 
-O **Free Todo List** é uma aplicação simples, acessível e de código aberto para gerenciamento de tarefas. Foi desenvolvido para ajudar qualquer usuário a organizar suas tarefas diárias de forma eficiente. Este projeto serve como uma demonstração fundamental de minhas habilidades em desenvolvimento web front-end.
+O **Free Todo List** é uma aplicação simples, feito para qualquer usuário acessar e usar. 
 
 ### Funcionalidades Principais
 
-* **Criação de Tarefas:** Adicione facilmente novas tarefas à lista.
-* **Marcação de Conclusão:** Alterne o status das tarefas para "Concluída" para rastrear o progresso.
-* **Exclusão de Tarefas:** Remova permanentemente as tarefas da lista.
+* **Criação de Tarefas:**
+* **Edição de Tarefas já criadas:** 
+* **Marcação de Conclusão:**
+* **Exclusão de Tarefas:**
 * **Persistência de Dados:** As tarefas são salvas no armazenamento local do navegador (`localStorage`), garantindo que não sejam perdidas ao fechar ou recarregar a página.
 
 ## 🛠️ Tecnologias Utilizadas
 
-Este projeto foi construído utilizando as tecnologias base da web, focando em simplicidade e performance, o que demonstra proficiência em:
+Focando em simplicidade e performance, o que demonstra proficiência em:
 
 * **HTML5:** Estrutura e Semântica do projeto.
 * **CSS3:** Estilização e responsividade da interface.
@@ -41,5 +42,3 @@ Você só precisará de um navegador web moderno (como Google Chrome, Firefox ou
     cd free-todo-list
     ```
 3.  **Abra o Aplicativo:** Simplesmente abra o arquivo `index.html` no seu navegador de preferência.
-
-## 📂 Estrutura do Projeto
