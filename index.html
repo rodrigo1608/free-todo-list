@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hands On</title>
+
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <script src="script.js" defer></script>
+
+</head>
+
+<body>
+
+   <div class="modal">
+
+        <div class="modal__content">
+
+            <h3 class="modal__heading">Editar Tarefa</h3>
+
+            <form class="modal-form">
+
+                <input type="text" name="editTaskInput" id="edit-task-input" class="modal-form__input" value="Tarefa Exemplo">
+
+                <div class="modal-form__actions">
+
+                    <button type="button" class="modal-form__cancel-button">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="modal-form__save-button">
+                        Salvar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="page-container">
+
+        <main class="todo-app">
+
+            <header class="todo-app__header">
+
+                <h1 class="todo-app__heading">
+                    To do list
+                </h1>
+
+                <form class="todo-form">
+
+                    <input type="text" name="newTaskInput" id="new-task-input" placeholder="Adicionar nova tarefa..."
+                        class="todo-form__input">
+
+                    <button type="submit" class="todo-form__submit-button">
+                        Add
+                        <svg class="todo-form__icon">
+                            <use href="icons.svg#add"></use>
+                        </svg>
+
+                    </button>
+
+
+                </form>
+
+            </header>
+
+            <section class="todo-app__body">
+
+                <ul class="todo-list">
+                  
+                </ul>
+
+            </section>
+
+            </article>
+
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,199 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body,
+div,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+i {
+    font-style: italic;
+}
+
+button {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+}
+
+:root {
+    --lighter: #E4E4E4;
+    --light: #D6D6D6;
+    --gray: #C8C8C8;
+    --dark-gray: #404040;
+    --dark: #2C2C2C;
+    --darker: #181818;
+    --highlight: #C5F8F9;
+    --blue: #2FA1C0;
+    --dark-blue: #2289A3;
+    --red: #95141E;
+    --title-family: 'Jost';
+    --default-gap: 2rem;
+    --container: 90%;
+    color: #404040;
+    font-family: 'Work Sans';    
+    font-size: 62.5%;   
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 2px solid var(--highlight);
+    outline-offset: .4rem;
+}
+
+input:focus-visible {
+    outline: none;
+    outline-offset: 0; /* Garante que não haja espaço extra */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--title-family), sans-serif;
+    line-height: 1.2;
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    display: inline-block;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+
+body {
+    height: 100dvh;
+    background-color: var(--lighter);
+    font-weight: 400;
+    color: var(--dark-gray);
+    overflow: auto;
+    font-variation-settings:
+        "wdth" 100;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 0;
+}
+
+body:has(.header__hamburger-engine:checked)::after {
+    opacity: 0.5;
+    visibility: visible;
+}
