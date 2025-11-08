@@ -37,7 +37,7 @@ Você só precisará de um navegador web moderno (como Google Chrome, Firefox ou
    ```bash
    git clone [https://github.com/rodrigo1608/free-todo-list.git](https://github.com/rodrigo1608/free-todo-list.git)
     ```
----
-2.  **Acesse o Diretório do Projeto:**
+#
+2. **Acesse o Diretório do Projeto:**
     ```
 3.  **Abra o Aplicativo:** Simplesmente abra o arquivo `index.html` no seu navegador de preferência.
