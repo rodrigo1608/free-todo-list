@@ -25,7 +25,7 @@
 
 <body>
 
-   <div class="modal">
+    <!-- <div class="modal">
 
         <div class="modal__content">
 
@@ -33,15 +33,15 @@
 
             <form class="modal-form">
 
-                <input type="text" name="editTaskInput" id="edit-task-input" class="modal-form__input" value="Tarefa Exemplo">
+                <input type="text" name="editTaskInput" id="edit-task-input" class="edit-modal-form__input" value="Tarefa Exemplo">
 
-                <div class="modal-form__actions">
+                <div class="edit-modal-form__actions">
 
-                    <button type="button" class="modal-form__cancel-button">
+                    <button type="button" class="edit-modal-form__cancel-button">
                         Cancelar
                     </button>
 
-                    <button type="submit" class="modal-form__save-button">
+                    <button type="submit" class="edit-modal-form__save-button">
                         Salvar
                     </button>
 
@@ -49,50 +49,72 @@
 
             </form>
 
-        </div>
+        </div> 
 
-    </div>
+    </div>-->
 
-    <div class="page-container">
+    <article id="create-modal" class="modal">
 
-        <main class="todo-app">
+        <div class="modal__container">
 
-            <header class="todo-app__header">
+            <header class="modal__header">
 
-                <h1 class="todo-app__heading">
-                    To do list
-                </h1>
+                <button class="modal__button-close button">
+                    <svg class="todo-form__icon button-icon--close">
+                        <use href="icons.svg#close"></use>
+                    </svg>
+                </button>
 
-                <form class="todo-form">
-
-                    <input type="text" name="newTaskInput" id="new-task-input" placeholder="Adicionar nova tarefa..."
-                        class="todo-form__input">
-
-                    <button type="submit" class="todo-form__submit-button">
-                        Add
-                        <svg class="todo-form__icon">
-                            <use href="icons.svg#add"></use>
-                        </svg>
-
-                    </button>
-
-
-                </form>
-
+                <h2 class="new-todo-form__heading">Novo Item</h2>
             </header>
 
-            <section class="todo-app__body">
+            <main class="modal__body">
+                <form id="new-todo-form" class="new-todo-form">
+                    <input type="text" name="newTaskInput" id="new-todo-input" placeholder="Adicionar novo item..."
+                        class="new-todo-form__input">
+                </form>
+            </main>
 
-                <ul class="todo-list">
-                  
-                </ul>
+            <footer class="modal__footer">
 
-            </section>
+                <button type="submit" form="new-todo-form" class="new-todo-form__submit-button button">
+                    <span class="new-todo-form__submit-button-label">
+                        Criar novo item
+                    </span>
 
-            </article>
+                    <svg class="todo-form__icon button-icon">
+                        <use href="icons.svg#add"></use>
+                    </svg>
+                </button>
 
+            </footer>
+        </div>
 
-    </div>
+    </article>
+
+    <header class="app-header">
+
+        <div class="logo">
+            <img src="free_todo_logo.svg" alt="Logo App" class="logo__img">
+        </div>
+
+        <button class="new-task-button button">
+
+            <svg class="new-task-button__icon button-icon">
+                <use href="icons.svg#add"></use>
+            </svg>
+
+        </button>
+
+    </header>
+
+    <main class="todo-app">
+
+        <ul class="todo-list">
+
+        </ul>
+
+    </main>
 
 </body>
 

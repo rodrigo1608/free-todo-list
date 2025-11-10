@@ -172,28 +172,11 @@ section {
 }
 
 body {
-    height: 100dvh;
+    height: 100dvh;    
     background-color: var(--lighter);
     font-weight: 400;
-    color: var(--dark-gray);
-    overflow: auto;
+    color: var(--dark-gray);    
     font-variation-settings:
         "wdth" 100;
 }
 
-body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    visibility: hidden;
-    z-index: 0;
-}
-
-body:has(.header__hamburger-engine:checked)::after {
-    opacity: 0.5;
-    visibility: visible;
-}

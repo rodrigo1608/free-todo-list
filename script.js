@@ -1,97 +1,32 @@
-const todoForm = document.querySelector('.todo-form');
-const appHeading = document.querySelector('.todo-app__heading');
-const newTaskInput = todoForm.querySelector('.todo-form__input');
-const todoList = document.querySelector('.todo-list');
+const newTaskButton = document.querySelector('.new-task-button');
 
-const date = new Date();
-
-const shortDate = date.toLocaleDateString('pt-BR', { dateStyle: 'short' });
-appHeading.textContent += ` - ${shortDate}`;
-
-const buildTodo = (text) => {
-
-    const newLabel = document.createElement('span');
-
-    newLabel.textContent = text;
-    newLabel.classList.add('todo-list__item-content');
-
-    return newLabel
-}
-
-const buildActionButton = (iconID) => {
-
-    const actionButton = document.createElement('button');
-    actionButton.classList.add("todo-form__action-btn");
-    actionButton.setAttribute('data-action', iconID)
-
-    const editOrDeleteClass = iconID === 'edit' ? 'fill-edit' : 'fill-delete';   
-
-    actionButton.innerHTML = `
-        <svg class="todo-list__item-icon ${editOrDeleteClass}">
-            <use href="icons.svg#${iconID}"></use>
-        </svg>
-        `;
-
-    return actionButton;
-}
-
-const buildActionsContainer = () => {
-    const actionContainer = document.createElement('div');
-    actionContainer.classList.add('todo-list__item-actions');
-
-    const editButton = buildActionButton('edit');
-    const deleteButton = buildActionButton('delete');
-
-    actionContainer.append(editButton, deleteButton);
-    return actionContainer;
-}
-
-const buildListItem = (textContent) =>{
-    const item = document.createElement('li');
-    item.classList.add('todo-list__item');
-
-    const todo =  buildTodo(textContent);
-    
-    todo.classList.add('todo-list__item-todo');
-
-    const actions = buildActionsContainer();
-
-    item.append(todo, actions);
-    return item;
-} 
-
-todoForm.addEventListener('submit', event => {
-
-    event.preventDefault();
-    const todo = newTaskInput.value.trim();
-    
-    if(!todo) return
-
-    const newItem = buildListItem(todo);  
-
-    todoList.appendChild(newItem);
-
-    newTaskInput.value = '';  
-
-});
-
-todoList.addEventListener('click', event =>{
-
-    const actionButton = event.target.closest('.todo-form__action-btn');
-
-    if(actionButton){
-
-        const action = actionButton.dataset.action;
-        const listItem = actionButton.closest('.todo-list__item');        
-
-        if (!listItem) return;
-
-        if(action ==='delete'){
-           listItem.remove();
-        }
-
-    }
-
-    
+newTaskButton.addEventListener('click',() => {
+    console.log('open create new task modal');
 })
+
+const appMain = document.querySelector('.todo-app');
+const today = new Date();
+
+const todayShortFormat = today.toLocaleString('pt-BR',{dateStyle:'short'});
+
+const todoAppHeading = document.createElement('h2');
+todoAppHeading.classList.add('todo-app__heading');
+todoAppHeading.textContent = todayShortFormat;
+
+appMain.prepend(todoAppHeading);
+
+const todoList = appMain.querySelector('.todo-list');
+
+if(!todoList.childElementCount){
+
+ const emptyNotice = document.createElement('span');
+ emptyNotice.classList.add('todo-list__empty-notice');
+ emptyNotice.textContent = "🚀 Nenhuma tarefa encontrada. Hora de adicionar algo novo!";
+
+ todoList.prepend(emptyNotice);
+
+}
+
+
+
 
