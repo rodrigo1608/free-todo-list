@@ -3,8 +3,6 @@ const todoForm = document.querySelector('.todo-form');
 const newTaskInput = todoForm.querySelector('.todo-form__input');
 const todoList = document.querySelector('.todo-list');
 
-
-
 const appHeading = document.createElement('h1');
 appHeading.classList.add('todo-app__heading');
 console.log(appHeading);
@@ -15,7 +13,7 @@ appHeading.textContent = shortDate;
 
 headerTodo.prepend(appHeading);
 
-const buildTodo = (text) => {
+const buildTodo = text => {
 
     const newLabel = document.createElement('span');
 
@@ -29,7 +27,7 @@ const buildActionButton = (iconID) => {
 
     const actionButton = document.createElement('button');
     actionButton.classList.add("todo-form__action-btn");
-    actionButton.setAttribute('data-action', iconID)
+    actionButton.setAttribute('data-action', iconID);
 
     const editOrDeleteClass = iconID === 'edit' ? 'fill-edit' : 'fill-delete';   
 

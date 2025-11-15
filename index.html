@@ -19,50 +19,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
 
-    <script src="script.js" defer></script>
-
 </head>
 
 <body>
-
-    <!-- <div class="modal">
-
-        <div class="modal__content">
-
-            <h3 class="modal__heading">Editar Tarefa</h3>
-
-            <form class="modal-form">
-
-                <input type="text" name="editTaskInput" id="edit-task-input" class="edit-modal-form__input" value="Tarefa Exemplo">
-
-                <div class="edit-modal-form__actions">
-
-                    <button type="button" class="edit-modal-form__cancel-button">
-                        Cancelar
-                    </button>
-
-                    <button type="submit" class="edit-modal-form__save-button">
-                        Salvar
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div> 
-
-    </div>-->
-
-    <article id="create-modal" class="modal toggle-modal">
+  
+    <article id="create-modal" class="modal hidden">
 
         <div class="modal__container">
 
             <header class="modal__header">
 
-                <button id="close-create-todo" class="modal__button-close button">
+                <button id="close-create-todo" class="modal__button-close button bg-gray">
 
-                    <svg class="todo-form__icon button-icon--close">
-                        <use href="icons.svg#close"></use>
+                    <svg class="action-modal-icon">
+                        <use href="/icons.svg#close"></use>
                     </svg>
 
                 </button>
@@ -80,14 +50,15 @@
 
             <footer class="modal__footer">
 
-                <button type="submit" form="new-todo-form" class="new-todo-form__submit-button button">
+                <button type="submit" form="new-todo-form" class="new-todo-form__submit-button button bg-blue">
                     <span class="new-todo-form__submit-button-label">
                         Criar novo item
                     </span>
 
-                    <svg class="todo-form__icon button-icon">
-                        <use href="icons.svg#add"></use>
+                    <svg class="action-modal-icon button-icon">
+                        <use href="/icons.svg#add"></use>
                     </svg>
+
                 </button>
 
             </footer>
@@ -101,10 +72,10 @@
             <img src="free_todo_logo.svg" alt="Logo App" class="logo__img">
         </div>
 
-        <button class="new-task-button button">
+        <button class="new-todo-button button bg-blue">
 
-            <svg class="new-task-button__icon button-icon">
-                <use href="icons.svg#add"></use>
+            <svg class="new-todo-button__icon button-icon">
+                <use href="/icons.svg#add"></use>
             </svg>
 
         </button>
@@ -113,12 +84,19 @@
 
     <main class="todo-app">
 
-        <ul class="todo-list">
+        <article class="todo-app__empty-notice">
+            <img src="empty-img.png" alt="" class="todo-app__empty-img">
+            <p class="todo-app__empty-message"><i>Hora de adicionar algo novo!</i></p>
+        </article>
+
+        <ul class="todo-list">           
 
         </ul>
 
     </main>
 
+    <script src="script.js"></script>
+    
 </body>
 
 </html>
