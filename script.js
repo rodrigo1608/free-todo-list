@@ -1,167 +1,235 @@
-document.addEventListener('DOMContentLoaded', () => {
 
-    const openCreateTodoModalButton = document.querySelector('.new-todo-button');
-    const newTodoModalElement = document.getElementById('create-modal');
-    const newTodoInput = document.getElementById('new-todo-input');
+const openCreateTodoModalButton = document.querySelector('.new-todo-button');
+const newTodoModalElement = document.getElementById('create-modal');
+const newTodoInput = document.getElementById('new-todo-input');
+const closeCreateTodoModalButton = document.getElementById('close-create-todo');
+const todoAppContainer = document.querySelector('.todo-app');
+const todoAppHeading = document.createElement('h2');
+const todoList = todoAppContainer.querySelector('.todo-list');
+const emptyNotice = todoAppContainer.querySelector('.todo-app__empty-notice');
+const newTodoForm = document.getElementById('new-todo-form');
 
-    const toggleElement = element => element.classList.toggle('hidden');
+const today = new Date();
 
-    openCreateTodoModalButton.addEventListener('click', () => {
+const todayShortFormat = today.toLocaleString('pt-BR', { dateStyle: 'short' });
+
+todoAppHeading.classList.add('todo-app__heading');
+todoAppHeading.textContent = todayShortFormat;
+
+todoAppContainer.prepend(todoAppHeading);
+
+const toggleElement = element => element.classList.toggle('hidden');
+
+const closeModalFromOutsideClick = event => {
+
+    const shouldCloseModal = event.target.id === "create-modal";
+
+    if (shouldCloseModal) {
         toggleElement(newTodoModalElement);
-        newTodoInput.focus();
-    })
-
-    const closeCreateTodoModalButton = document.getElementById('close-create-todo');
-
-    closeCreateTodoModalButton.addEventListener('click', () => toggleElement(newTodoModalElement));
-
-    const closeModalFromOutsideClick = event => {
-
-        const shouldCloseModal = event.target.id === "create-modal";
-
-        if (shouldCloseModal) {
-            toggleElement(newTodoModalElement);
-        }
-
     }
 
-    newTodoModalElement.addEventListener('click', closeModalFromOutsideClick);
+}
 
-    const todoAppContainer = document.querySelector('.todo-app');
+const updateContentVisibility = () => {
 
-    const today = new Date();
-
-    const todayShortFormat = today.toLocaleString('pt-BR', { dateStyle: 'short' });
-
-    const todoAppHeading = document.createElement('h2');
-
-    todoAppHeading.classList.add('todo-app__heading');
-    todoAppHeading.textContent = todayShortFormat;
-
-    todoAppContainer.prepend(todoAppHeading);
-
-    const todoList = todoAppContainer.querySelector('.todo-list');
-    const emptyNotice = todoAppContainer.querySelector('.todo-app__empty-notice');
-
-
-    const updateContentVisibility = () => {
-
-        if (todoList.childElementCount > 0) {
-            emptyNotice.classList.add('hidden');
-            todoList.classList.remove('hidden');
-        }
-
-        else {
-            emptyNotice.classList.remove('hidden');
-            todoList.classList.add('hidden');
-        }
+    if (todoList.childElementCount > 0) {
+        emptyNotice.classList.add('hidden');
+        todoList.classList.remove('hidden');
     }
+
+    else {
+        emptyNotice.classList.remove('hidden');
+        todoList.classList.add('hidden');
+    }
+}
+
+const buildElement = (elementName, classNames, content = null) => {
+
+    const element = document.createElement(elementName);
+    element.classList.add(...classNames);
+
+    if (content) {
+        element.textContent = content;
+    }
+
+    return element;
+}
+
+const buildCheckboxContent = () => {
+
+    const checkboxContentWrapper = buildElement('div', ['todo-list__checkbox-content-wrapper']);
+    const checkboxInput = buildElement('input', ['todo-list__checkbox']);
+
+    checkboxInput.setAttribute('type', 'checkbox');
+
+    const todo = buildElement('span', ['todo-list__todo'], newTodoInput.value.trim());
+    checkboxContentWrapper.append(checkboxInput, todo);
+
+    return checkboxContentWrapper;
+}
+
+const buildActionsButton = (buttonOptions) => {
+
+    const {
+        iconID,
+        classNamesIcon,
+        classNamesButton,
+        labelText,
+        labelClasses
+    } = buttonOptions;
+
+    const actionButton = buildElement('button', classNamesButton);
+    actionButton.setAttribute('data-action', iconID);
+
+    actionButton.innerHTML =
+        `<svg class='${classNamesIcon.join(' ')}'>
+    <use href="/icons.svg#${iconID}"></use>
+    </svg>`
+
+    if (labelText) {
+        const actionButtonLabel = buildElement('span', labelClasses);
+        actionButtonLabel.textContent = labelText;
+        actionButton.append(actionButtonLabel);
+    }
+
+    return actionButton;
+
+}
+
+const openNewTodoModal = () => {
+    toggleElement(newTodoModalElement);
+    newTodoInput.focus();
+}
+
+updateContentVisibility();
+
+openCreateTodoModalButton.addEventListener('click', openNewTodoModal);
+
+closeCreateTodoModalButton.addEventListener('click', () => toggleElement(newTodoModalElement));
+
+newTodoModalElement.addEventListener('click', closeModalFromOutsideClick);
+
+newTodoForm.addEventListener('submit', event => {
+
+    event.preventDefault();
+
+    const newItem = buildElement('li', ['todo-list__item']);
+
+    if (!newTodoInput.value.trim()) {
+        toggleElement(newTodoModalElement);
+        return
+    }
+
+    const checkboxContent = buildCheckboxContent();
+
+    const buttonClasses = ['button'];
+    const iconClasses = ['button-icon--secondary', 'action-icon'];
+
+    const actionButtonAttributes = {
+        iconID: 'more',
+        classNamesIcon: iconClasses,
+        classNamesButton: buttonClasses
+    };
+
+    const optionActionButton = buildActionsButton(actionButtonAttributes);
+
+    newItem.append(checkboxContent, optionActionButton);
+
+    todoList.append(newItem);
 
     updateContentVisibility();
 
-    // const registerTodoButton = document.querySelector('.new-todo-form__submit-button');
+    toggleElement(newTodoModalElement);
 
-    const buildElement = (elementName, className, content = null) => {
+    newTodoInput.value = "";
 
-        const element = document.createElement(elementName);
+});
 
-        element.classList.add(className);
+const buildDropDownOption = (iconID, labelText) => {
 
-        if (content) {
-            element.textContent = content;
-        }
+    const iconFillClass = iconID === 'delete' ? 'button-icon--danger' : 'button-icon--secondary';
+    const iconClasses = [iconFillClass, 'action-icon'];
+    const buttonClasses = ['button', 'todo-list__action-option'];
 
-        return element;
-    }
+    const actionButtonAttributes = {
+        iconID: iconID,
+        classNamesIcon: iconClasses,
+        classNamesButton: buttonClasses,
+        labelText: labelText,
+        labelClasses: ['todo-list__action-option-label']
+    };
 
-    const buildCheckboxContent = () => {
+    const actionButton = buildActionsButton(actionButtonAttributes);
 
-        const checkboxContentWrapper = buildElement('div', 'todo-list__checkbox-content-wrapper');
-        const checkboxInput = buildElement('input', 'todo-list__checkbox');
-        checkboxInput.setAttribute('type', 'checkbox');
+    return actionButton;
+}
 
-        const todo = buildElement('span', 'todo-list__todo', newTodoInput.value.trim());
-        checkboxContentWrapper.append(checkboxInput, todo);
+const buildDropDownOptions = () => {
 
-        return checkboxContentWrapper;
-    }
+    const dropDownContainer = buildElement('div', ['todo-list__dropdown', 'hidden']);
 
-    const buildActionsButton = (iconID, style = 'primary', additionalClass = null) => {
+    const dropDownEditOption = buildDropDownOption('edit', 'Editar');
+    const dropDownRemoveOption = buildDropDownOption('delete', 'Remover');
 
-        styleButtonClass = style === 'primary' ? 'bg-blue' : 'bg-gray';
-        styleIconClass = style === 'primary' ? 'button-icon' : 'button-icon--secondary';
+    dropDownContainer.append(dropDownEditOption, dropDownRemoveOption);
 
-        const classesToAdd = [styleButtonClass, additionalClass].filter(Boolean);
+    return dropDownContainer;
+}
 
-        const actionButton = buildElement('button', 'button');
-        actionButton.classList.add(...classesToAdd);
-        actionButton.setAttribute('data-action', iconID);
+const closeDropDowns = () => {
 
-        actionButton.innerHTML =
-            `<svg class='${styleIconClass} action-modal-icon'>
-                <use href="/icons.svg#${iconID}"></use>
-          </svg>`
+    todoList.querySelectorAll('.todo-list__dropdown').forEach(dropdown => {
 
-        return actionButton;
+        const isDropdownOpen = !dropdown.classList.contains('hidden');
 
-    }
-
-    const newTodoForm = document.getElementById('new-todo-form');
-
-    newTodoForm.addEventListener('submit', event => {
-
-        event.preventDefault();
-
-        const newItem = buildElement('li', 'todo-list__item');
-
-        if (!newTodoInput.value.trim()) {
-            toggleElement(newTodoModalElement);
-            return
-        }
-
-        const checkboxContent = buildCheckboxContent(newTodoForm);
-
-        const checkboxWrapper = buildElement('div', 'todo-list__checkbox-input-wrapper');
-
-        checkboxWrapper.append(checkboxContent);
-
-        optionActionButton = buildActionsButton('more', 'secondary', 'relative');
-
-        newItem.append(checkboxContent, optionActionButton);
-
-        todoList.append(newItem);
-
-        updateContentVisibility();
-
-        toggleElement(newTodoModalElement);
-
-        newTodoInput.value = "";
-
-    });
-
-    const buildDropDownOptions = () => {
-        const dropDownContainer = buildElement('div', 'todo-list__action-options');
-        return dropDownContainer;
-
-    }
-
-    todoList.addEventListener('click', event => {
-
-        const currentTodoActionOption = event.target.closest('[data-action="more"]');
-
-
-        if (currentTodoActionOption) {
-
-            const deleteActionButton = buildActionsButton('delete', 'secondary', 'relative');
-            const editActionButton = buildActionsButton('edit', 'secondary', 'relative');
-
-            console.log(currentTodoActionOption);
-            const dropDownOptions = buildDropDownOptions();
-
-            currentTodoActionOption.append(dropDownOptions);
-
+        if (isDropdownOpen) {
+            dropdown.classList.add('hidden');
         }
 
     });
+
+}
+
+const handleDropDown = currentTodo => {
+
+    let dropDownOptions = currentTodo.querySelector('.todo-list__dropdown');
+
+    const wasOpen = dropDownOptions && !dropDownOptions.classList.contains('hidden');
+
+    closeDropDowns();
+
+    if (!dropDownOptions) {
+
+        dropDownOptions = buildDropDownOptions();
+        currentTodo.append(dropDownOptions);
+
+    }
+
+    if (!wasOpen) dropDownOptions.classList.remove('hidden');
+
+}
+
+todoList.addEventListener('click', event => {
+
+    const currentTodoActionOption = event.target.closest('[data-action="more"]');
+
+    if (currentTodoActionOption) {
+        const currentTodo = event.target.closest('.todo-list__item');
+        handleDropDown(currentTodo);
+    }
+
+});
+
+document.addEventListener('click', event => {
+
+    const isClickOnMoreButton = event.target.closest('[data-action="more"]');
+
+    if (isClickOnMoreButton) return;
+
+    const isClickInsideDropdown = event.target.closest('.todo-list__dropdown');
+
+    if (!isClickInsideDropdown) {
+        closeDropDowns();
+    }
 
 });
