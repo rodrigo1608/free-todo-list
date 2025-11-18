@@ -1,6 +1,6 @@
 
-const openCreateTodoModalButton = document.querySelector('.new-todo-button');
-const newTodoModalElement = document.getElementById('create-modal');
+const openCreateTodoModalButton = document.querySelector('.button--new-todo');
+const newTodoModalElement = document.getElementById('create-todo-modal');
 const newTodoInput = document.getElementById('new-todo-input');
 const closeCreateTodoModalButton = document.getElementById('close-create-todo');
 const todoAppContainer = document.querySelector('.todo-app');
@@ -22,7 +22,7 @@ const toggleElement = element => element.classList.toggle('hidden');
 
 const closeModalFromOutsideClick = event => {
 
-    const shouldCloseModal = event.target.id === "create-modal";
+    const shouldCloseModal = event.target.id === "create-todo-modal";
 
     if (shouldCloseModal) {
         toggleElement(newTodoModalElement);
@@ -62,13 +62,13 @@ const buildCheckboxContent = () => {
 
     checkboxInput.setAttribute('type', 'checkbox');
 
-    const todo = buildElement('span', ['todo-list__todo'], newTodoInput.value.trim());
+    const todo = buildElement('span', ['todo-list__text'], newTodoInput.value.trim());
     checkboxContentWrapper.append(checkboxInput, todo);
 
     return checkboxContentWrapper;
 }
 
-const buildActionsButton = (buttonOptions) => {
+const buildButton = (buttonAttributes) => {
 
     const {
         iconID,
@@ -76,7 +76,7 @@ const buildActionsButton = (buttonOptions) => {
         classNamesButton,
         labelText,
         labelClasses
-    } = buttonOptions;
+    } = buttonAttributes;
 
     const actionButton = buildElement('button', classNamesButton);
     actionButton.setAttribute('data-action', iconID);
@@ -101,15 +101,7 @@ const openNewTodoModal = () => {
     newTodoInput.focus();
 }
 
-updateContentVisibility();
-
-openCreateTodoModalButton.addEventListener('click', openNewTodoModal);
-
-closeCreateTodoModalButton.addEventListener('click', () => toggleElement(newTodoModalElement));
-
-newTodoModalElement.addEventListener('click', closeModalFromOutsideClick);
-
-newTodoForm.addEventListener('submit', event => {
+const handleNewItemSubmit = event => {
 
     event.preventDefault();
 
@@ -122,18 +114,15 @@ newTodoForm.addEventListener('submit', event => {
 
     const checkboxContent = buildCheckboxContent();
 
-    const buttonClasses = ['button'];
-    const iconClasses = ['button-icon--secondary', 'action-icon'];
-
-    const actionButtonAttributes = {
+    const todoOptionsButtonAttributes = {
         iconID: 'more',
-        classNamesIcon: iconClasses,
-        classNamesButton: buttonClasses
+        classNamesIcon: ['icon--secondary', 'icon-sm'],
+        classNamesButton: ['button', 'button--secondary']
     };
 
-    const optionActionButton = buildActionsButton(actionButtonAttributes);
+    const todoOptionsButton = buildButton(todoOptionsButtonAttributes);
 
-    newItem.append(checkboxContent, optionActionButton);
+    newItem.append(checkboxContent, todoOptionsButton);
 
     todoList.append(newItem);
 
@@ -143,23 +132,31 @@ newTodoForm.addEventListener('submit', event => {
 
     newTodoInput.value = "";
 
-});
+}
+
+updateContentVisibility();
+
+openCreateTodoModalButton.addEventListener('click', openNewTodoModal);
+
+closeCreateTodoModalButton.addEventListener('click', () => toggleElement(newTodoModalElement));
+
+newTodoModalElement.addEventListener('click', closeModalFromOutsideClick);
+
+newTodoForm.addEventListener('submit', handleNewItemSubmit);
 
 const buildDropDownOption = (iconID, labelText) => {
 
-    const iconFillClass = iconID === 'delete' ? 'button-icon--danger' : 'button-icon--secondary';
-    const iconClasses = [iconFillClass, 'action-icon'];
-    const buttonClasses = ['button', 'todo-list__action-option'];
+    const iconStyle = iconID === 'delete' ? 'icon--danger' : 'icon--secondary';
 
     const actionButtonAttributes = {
         iconID: iconID,
-        classNamesIcon: iconClasses,
-        classNamesButton: buttonClasses,
+        classNamesIcon:  [iconStyle, 'icon-sm'],
+        classNamesButton: ['button', 'todo-list__action-option','todo-list__dropdown-option'],
         labelText: labelText,
         labelClasses: ['todo-list__action-option-label']
     };
 
-    const actionButton = buildActionsButton(actionButtonAttributes);
+    const actionButton = buildButton(actionButtonAttributes);
 
     return actionButton;
 }
