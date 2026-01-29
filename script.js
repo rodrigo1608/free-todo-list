@@ -18,9 +18,9 @@ todoAppHeading.textContent = todayShortFormat;
 
 todoAppContainer.prepend(todoAppHeading);
 
-const toggleElement = element => element.classList.toggle('hidden');
+const toggleElement = (element, forceValue) => element.classList.toggle('hidden', forceValue);
 
-const closeModalFromOutsideClick = event => {
+const handleOutsideClickToCloseModal = event => {
 
     const shouldCloseModal = event.target.id === "create-todo-modal";
 
@@ -32,15 +32,10 @@ const closeModalFromOutsideClick = event => {
 
 const updateContentVisibility = () => {
 
-    if (todoList.childElementCount > 0) {
-        emptyNotice.classList.add('hidden');
-        todoList.classList.remove('hidden');
-    }
+    const hasItems = todoList.childElementCount > 0;
 
-    else {
-        emptyNotice.classList.remove('hidden');
-        todoList.classList.add('hidden');
-    }
+    toggleElement(emptyNotice, hasItems);
+    toggleElement(todoList, !hasItems);
 }
 
 const buildElement = (elementName, classNames, content = null) => {
@@ -136,13 +131,6 @@ const handleNewItemSubmit = event => {
 
 updateContentVisibility();
 
-openCreateTodoModalButton.addEventListener('click', openNewTodoModal);
-
-closeCreateTodoModalButton.addEventListener('click', () => toggleElement(newTodoModalElement));
-
-newTodoModalElement.addEventListener('click', closeModalFromOutsideClick);
-
-newTodoForm.addEventListener('submit', handleNewItemSubmit);
 
 const buildDropDownOption = (iconID, labelText) => {
 
@@ -150,8 +138,8 @@ const buildDropDownOption = (iconID, labelText) => {
 
     const actionButtonAttributes = {
         iconID: iconID,
-        classNamesIcon:  [iconStyle, 'icon-sm'],
-        classNamesButton: ['button', 'todo-list__action-option','todo-list__dropdown-option'],
+        classNamesIcon: [iconStyle, 'icon-sm'],
+        classNamesButton: ['button', 'todo-list__action-option', 'todo-list__dropdown-option'],
         labelText: labelText,
         labelClasses: ['todo-list__action-option-label']
     };
@@ -163,7 +151,7 @@ const buildDropDownOption = (iconID, labelText) => {
 
 const buildDropDownOptions = () => {
 
-    const dropDownContainer = buildElement('div', ['todo-list__dropdown', 'hidden']);
+    const dropDownContainer = buildElement('div', ['todo-list__dropdown']);
 
     const dropDownEditOption = buildDropDownOption('edit', 'Editar');
     const dropDownRemoveOption = buildDropDownOption('delete', 'Remover');
@@ -187,12 +175,21 @@ const closeDropDowns = () => {
 
 }
 
-const handleDropDown = currentTodo => {
+const handleEditOptionVisibility = currentTodo => {
+
+    let dropDownOptions = currentTodo.querySelector('.todo-list__dropdown');
+    const currentCheckbox = currentTodo.querySelector('.todo-list__checkbox');
+    const dropDownEditButton = dropDownOptions.querySelector('[data-action="edit"');
+
+    toggleElement(dropDownEditButton, currentCheckbox.checked);
+
+}
+
+const handleDropDownVisibility = currentTodo => {
 
     let dropDownOptions = currentTodo.querySelector('.todo-list__dropdown');
 
     const wasOpen = dropDownOptions && !dropDownOptions.classList.contains('hidden');
-
     closeDropDowns();
 
     if (!dropDownOptions) {
@@ -202,22 +199,23 @@ const handleDropDown = currentTodo => {
 
     }
 
-    if (!wasOpen) dropDownOptions.classList.remove('hidden');
+    handleEditOptionVisibility(currentTodo);
+
+    toggleElement(dropDownOptions, wasOpen);
 
 }
 
-todoList.addEventListener('click', event => {
+const handleMoreButtonClick = event => {
 
-    const currentTodoActionOption = event.target.closest('[data-action="more"]');
+    const currentTodoOptionsButton = event.target.closest('[data-action="more"]');
 
-    if (currentTodoActionOption) {
+    if (currentTodoOptionsButton) {
         const currentTodo = event.target.closest('.todo-list__item');
-        handleDropDown(currentTodo);
+        handleDropDownVisibility(currentTodo);
     }
+};
 
-});
-
-document.addEventListener('click', event => {
+const handleOutsideClickToCloseDropdown = event => {
 
     const isClickOnMoreButton = event.target.closest('[data-action="more"]');
 
@@ -229,4 +227,140 @@ document.addEventListener('click', event => {
         closeDropDowns();
     }
 
-});
+}
+
+
+
+
+// --- NOVAS FUNÇÕES ---
+
+const saveEditedTodo = (currentTodo, editInput) => {
+    // 1. Pega o novo texto, garantindo que não seja vazio
+    const newText = editInput.value.trim() || 'Item vazio'; 
+
+    // 2. Reverte para o elemento de texto (span)
+    const newTodoTextElement = buildElement('span', ['todo-list__text'], newText);
+    
+    // 3. Aplica o estilo de concluído/riscado (se o checkbox estiver marcado)
+    const checkbox = currentTodo.querySelector('.todo-list__checkbox');
+    if (checkbox.checked) {
+        newTodoTextElement.style.textDecoration = 'line-through';
+        newTodoTextElement.style.opacity = '0.5';
+    }
+
+    // 4. Substitui o input pelo novo span de texto
+    const checkboxContentWrapper = currentTodo.querySelector('.todo-list__checkbox-content-wrapper');
+    checkboxContentWrapper.replaceChild(newTodoTextElement, editInput);
+
+    // 5. Reaparece o botão de opções (três pontos)
+    const moreButton = currentTodo.querySelector('[data-action="more"]');
+    moreButton.classList.remove('hidden');
+};
+
+const handleEditTodo = currentTodo => {
+    // 1. Fecha o dropdown aberto para evitar interrupção
+    closeDropDowns();
+
+    const todoTextElement = currentTodo.querySelector('.todo-list__text');
+    const originalText = todoTextElement.textContent;
+
+    // 2. Cria o campo de input de edição
+    const editInput = document.createElement('input');
+    editInput.type = 'text';
+    editInput.classList.add('todo-list__edit-input');
+    editInput.value = originalText;
+
+    // 3. Substitui o texto pelo input
+    const checkboxContentWrapper = currentTodo.querySelector('.todo-list__checkbox-content-wrapper');
+    checkboxContentWrapper.replaceChild(editInput, todoTextElement);
+
+    editInput.focus();
+    
+    // 4. Adicionar evento para salvar ao pressionar Enter
+    editInput.addEventListener('keypress', event => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); 
+            // O blur será disparado, que chamará saveEditedTodo.
+            editInput.blur(); 
+        }
+    });
+
+    // 5. Adicionar evento para salvar ao perder o foco (blur)
+    editInput.addEventListener('blur', () => {
+        // Usa setTimeout para dar tempo para o evento 'keypress' finalizar, 
+        // e garante que a edição não seja salva duas vezes
+        setTimeout(() => saveEditedTodo(currentTodo, editInput), 0);
+    });
+
+    // 6. Ocultar o botão de opções (três pontos)
+    const moreButton = currentTodo.querySelector('[data-action="more"]');
+    moreButton.classList.add('hidden');
+};
+
+
+// Remova: todoList.addEventListener('click', handleMoreButtonClick);
+
+const handleTodoActionClick = event => {
+    const currentTodo = event.target.closest('.todo-list__item');
+    if (!currentTodo) return;
+
+    const actionButton = event.target.closest('[data-action]');
+    if (!actionButton) return;
+
+    const action = actionButton.getAttribute('data-action');
+
+    switch (action) {
+        case 'more':
+            handleDropDownVisibility(currentTodo);
+            break;
+
+        case 'edit':
+            handleEditTodo(currentTodo);
+            break;
+
+        case 'delete':
+            // Lógica para remoção
+            currentTodo.remove();
+            updateContentVisibility();
+            break;
+            
+        default:
+            return;
+    }
+};
+
+// Adicione este novo listener unificado
+todoList.addEventListener('click', handleTodoActionClick);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+openCreateTodoModalButton.addEventListener('click', openNewTodoModal);
+
+closeCreateTodoModalButton.addEventListener('click', () => toggleElement(newTodoModalElement));
+
+newTodoModalElement.addEventListener('click', handleOutsideClickToCloseModal);
+
+newTodoForm.addEventListener('submit', handleNewItemSubmit);
+
+// todoList.addEventListener('click', handleMoreButtonClick);
+
+document.addEventListener('click', handleOutsideClickToCloseDropdown);
