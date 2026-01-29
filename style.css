@@ -311,6 +311,7 @@ input {
     position: absolute;
     top: 4rem;
     z-index: 1000;
+    overflow:hidden;
 }
 
 .todo-list__dropdown-option {
@@ -326,14 +327,19 @@ input {
     background-color: var(--gray);
 }
 
-.todo-list__dropdown-option:first-child {
-    border-top-left-radius: 2rem;
-    border-top-right-radius: 2rem;
-}
-
-.todo-list__dropdown-option:last-child {
-    border-bottom-left-radius: 2rem;
-    border-bottom-right-radius: 2rem;
+/* Adicione esta classe ao seu style.css */
+.todo-list__edit-input {
+    flex-grow: 1; /* Permite que o campo ocupe o espaço disponível */
+    border: 1px solid var(--blue); /* Borda para destaque */
+    border-radius: 1rem;
+    padding: .4rem .8rem;
+    font-size: 1.4rem;
+    font-family: 'Work Sans';
+    font-weight: 500;
+    color: var(--dark-gray);
+    outline: none; /* Remove o outline padrão do focus */
+    /* Garante que o input apareça no mesmo lugar que o texto */
+    margin-left: 0.8rem; /* Para compensar o gap do checkbox wrapper */
 }
 
 .hidden {
