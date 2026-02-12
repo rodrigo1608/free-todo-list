@@ -2,33 +2,15 @@
 const openCreateTodoModalButton = document.querySelector('.button--new-todo');
 const newTodoModalElement = document.getElementById('create-todo-modal');
 const newTodoInput = document.getElementById('new-todo-input');
-const closeCreateTodoModalButton = document.getElementById('close-create-todo');
 const todoAppContainer = document.querySelector('.todo-app');
-const todoAppHeading = document.createElement('h2');
 const todoList = todoAppContainer.querySelector('.todo-list');
 const emptyNotice = todoAppContainer.querySelector('.todo-app__empty-notice');
 const newTodoForm = document.getElementById('new-todo-form');
 
 const today = new Date();
-
 const todayShortFormat = today.toLocaleString('pt-BR', { dateStyle: 'short' });
 
-todoAppHeading.classList.add('todo-app__heading');
-todoAppHeading.textContent = todayShortFormat;
-
-todoAppContainer.prepend(todoAppHeading);
-
-const toggleElement = (element, forceValue) => element.classList.toggle('hidden', forceValue);
-
-const handleOutsideClickToCloseModal = event => {
-
-    const shouldCloseModal = event.target.id === "create-todo-modal";
-
-    if (shouldCloseModal) {
-        toggleElement(newTodoModalElement);
-    }
-
-}
+const toggleElement = (element, forceValue) => element.classList.toggle('is-hidden', forceValue);
 
 const updateContentVisibility = () => {
 
@@ -38,35 +20,53 @@ const updateContentVisibility = () => {
     toggleElement(todoList, !hasItems);
 }
 
-const buildElement = (elementName, classNames, content = null) => {
+const buildElement = (elementName, classNames, content) => {
 
     const element = document.createElement(elementName);
     element.classList.add(...classNames);
 
     if (content) {
-        element.textContent = content;
+        const tagName = element.tagName.toLowerCase();
+        tagName === 'input' || tagName === 'textarea' ?
+            element.value = content :
+            element.textContent = content;
     }
 
     return element;
 }
 
-const buildCheckboxContent = () => {
+const buildCheckboxContent = text => {
 
     const checkboxContentWrapper = buildElement('div', ['todo-list__checkbox-content-wrapper']);
     const checkboxInput = buildElement('input', ['todo-list__checkbox']);
 
     checkboxInput.setAttribute('type', 'checkbox');
 
-    const todo = buildElement('span', ['todo-list__text'], newTodoInput.value.trim());
+    const todo = buildElement('span', ['todo-list__text'], text);
     checkboxContentWrapper.append(checkboxInput, todo);
 
     return checkboxContentWrapper;
 }
 
-const buildButton = (buttonAttributes) => {
+const buildSVGIncon = (classNames, id) => {
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, 'svg');
+
+    svg.classList.add(...classNames);
+
+    const useElement = document.createElementNS(svgNS, 'use');
+    useElement.setAttribute('href', `/icons.svg#${id}`);
+
+    svg.appendChild(useElement);
+
+    return svg;
+}
+
+const buildButton = buttonAttributes => {
 
     const {
-        iconID,
+        iconId,
         classNamesIcon,
         classNamesButton,
         labelText,
@@ -74,16 +74,14 @@ const buildButton = (buttonAttributes) => {
     } = buttonAttributes;
 
     const actionButton = buildElement('button', classNamesButton);
-    actionButton.setAttribute('data-action', iconID);
+    actionButton.setAttribute('data-action', iconId);
 
-    actionButton.innerHTML =
-        `<svg class='${classNamesIcon.join(' ')}'>
-    <use href="/icons.svg#${iconID}"></use>
-    </svg>`
+    const svgElement = buildSVGIncon(classNamesIcon, iconId);
+
+    actionButton.appendChild(svgElement);
 
     if (labelText) {
-        const actionButtonLabel = buildElement('span', labelClasses);
-        actionButtonLabel.textContent = labelText;
+        const actionButtonLabel = buildElement('span', labelClasses, labelText);
         actionButton.append(actionButtonLabel);
     }
 
@@ -91,55 +89,14 @@ const buildButton = (buttonAttributes) => {
 
 }
 
-const openNewTodoModal = () => {
-    toggleElement(newTodoModalElement);
-    newTodoInput.focus();
-}
+const buildDropDownOption = (iconId, labelText) => {
 
-const handleNewItemSubmit = event => {
-
-    event.preventDefault();
-
-    const newItem = buildElement('li', ['todo-list__item']);
-
-    if (!newTodoInput.value.trim()) {
-        toggleElement(newTodoModalElement);
-        return
-    }
-
-    const checkboxContent = buildCheckboxContent();
-
-    const todoOptionsButtonAttributes = {
-        iconID: 'more',
-        classNamesIcon: ['icon--secondary', 'icon-sm'],
-        classNamesButton: ['button', 'button--secondary']
-    };
-
-    const todoOptionsButton = buildButton(todoOptionsButtonAttributes);
-
-    newItem.append(checkboxContent, todoOptionsButton);
-
-    todoList.append(newItem);
-
-    updateContentVisibility();
-
-    toggleElement(newTodoModalElement);
-
-    newTodoInput.value = "";
-
-}
-
-updateContentVisibility();
-
-
-const buildDropDownOption = (iconID, labelText) => {
-
-    const iconStyle = iconID === 'delete' ? 'icon--danger' : 'icon--secondary';
+    const iconStyle = iconId === 'delete' ? 'icon--danger' : 'icon--secondary';
 
     const actionButtonAttributes = {
-        iconID: iconID,
+        iconId: iconId,
         classNamesIcon: [iconStyle, 'icon-sm'],
-        classNamesButton: ['button', 'todo-list__action-option', 'todo-list__dropdown-option'],
+        classNamesButton: ['button', 'todo-list__dropdown-option'],
         labelText: labelText,
         labelClasses: ['todo-list__action-option-label']
     };
@@ -151,7 +108,7 @@ const buildDropDownOption = (iconID, labelText) => {
 
 const buildDropDownOptions = () => {
 
-    const dropDownContainer = buildElement('div', ['todo-list__dropdown']);
+    const dropDownContainer = buildElement('div', ['todo-list__dropdown', 'is-hidden']);
 
     const dropDownEditOption = buildDropDownOption('edit', 'Editar');
     const dropDownRemoveOption = buildDropDownOption('delete', 'Remover');
@@ -161,16 +118,64 @@ const buildDropDownOptions = () => {
     return dropDownContainer;
 }
 
+const buildTodo = text => {
+    const todo = buildElement('li', ['todo-list__item']);
+    const checkboxContent = buildCheckboxContent(text);
+
+    const todoOptionsButtonAttributes = {
+        iconId: 'more',
+        classNamesIcon: ['icon--secondary', 'icon-sm'],
+        classNamesButton: ['button', 'button--secondary']
+    };
+
+    const todoOptionsButton = buildButton(todoOptionsButtonAttributes);
+    const dropDownOptions = buildDropDownOptions();
+    todo.append(checkboxContent, todoOptionsButton, dropDownOptions);
+
+    return todo;
+}
+
+const openNewTodoModal = () => {
+    toggleElement(newTodoModalElement, false);
+    newTodoInput.focus();
+}
+
+const handleClickToCloseModal = event => {
+
+    const closeCreateTodoModalButton = event.target.closest('#close-create-todo');
+    const outside = event.target.id === "create-todo-modal";
+    const shouldCloseModal = outside || closeCreateTodoModalButton;
+
+    toggleElement(newTodoModalElement, shouldCloseModal);
+}
+
+const handleNewTodoSubmit = event => {
+
+    event.preventDefault();
+
+    const todoText = newTodoInput.value.trim();
+
+    if (!todoText) {
+        toggleElement(newTodoModalElement);
+        newTodoInput.value = "";
+        return
+    }
+
+    const newTodo = buildTodo(todoText);
+
+    todoList.append(newTodo);
+
+    updateContentVisibility();
+
+    toggleElement(newTodoModalElement);
+
+    newTodoInput.value = "";
+
+}
+
 const closeDropDowns = () => {
-
     todoList.querySelectorAll('.todo-list__dropdown').forEach(dropdown => {
-
-        const isDropdownOpen = !dropdown.classList.contains('hidden');
-
-        if (isDropdownOpen) {
-            dropdown.classList.add('hidden');
-        }
-
+        toggleElement(dropdown, true);
     });
 
 }
@@ -179,7 +184,7 @@ const handleEditOptionVisibility = currentTodo => {
 
     let dropDownOptions = currentTodo.querySelector('.todo-list__dropdown');
     const currentCheckbox = currentTodo.querySelector('.todo-list__checkbox');
-    const dropDownEditButton = dropDownOptions.querySelector('[data-action="edit"');
+    const dropDownEditButton = dropDownOptions.querySelector('[data-action="edit"]');
 
     toggleElement(dropDownEditButton, currentCheckbox.checked);
 
@@ -189,118 +194,93 @@ const handleDropDownVisibility = currentTodo => {
 
     let dropDownOptions = currentTodo.querySelector('.todo-list__dropdown');
 
-    const wasOpen = dropDownOptions && !dropDownOptions.classList.contains('hidden');
+    const wasOpen = !dropDownOptions.classList.contains('is-hidden');
+
     closeDropDowns();
-
-    if (!dropDownOptions) {
-
-        dropDownOptions = buildDropDownOptions();
-        currentTodo.append(dropDownOptions);
-
-    }
-
-    handleEditOptionVisibility(currentTodo);
 
     toggleElement(dropDownOptions, wasOpen);
 
+    handleEditOptionVisibility(currentTodo);
+
 }
 
-const handleMoreButtonClick = event => {
+
+// const handleMoreButtonClick = event => {
+
+//     const currentTodoOptionsButton = event.target.closest('[data-action="more"]');   
+
+//     if (currentTodoOptionsButton) {
+
+//         const currentTodo = event.target.closest('.todo-list__item');
+//         handleDropDownVisibility(currentTodo);
+
+//     }
+
+// };
+
+const handleDropdownVisibilityByClick = event => {
 
     const currentTodoOptionsButton = event.target.closest('[data-action="more"]');
 
     if (currentTodoOptionsButton) {
         const currentTodo = event.target.closest('.todo-list__item');
         handleDropDownVisibility(currentTodo);
+
+        return
     }
-};
-
-const handleOutsideClickToCloseDropdown = event => {
-
-    const isClickOnMoreButton = event.target.closest('[data-action="more"]');
-
-    if (isClickOnMoreButton) return;
 
     const isClickInsideDropdown = event.target.closest('.todo-list__dropdown');
-
     if (!isClickInsideDropdown) {
         closeDropDowns();
     }
-
 }
 
+const saveEditedTodo = (currentTodo, editInput, oldTextValue) => {
 
+    const text = editInput.value.trim() || oldTextValue;
 
-
-// --- NOVAS FUNÇÕES ---
-
-const saveEditedTodo = (currentTodo, editInput) => {
-    // 1. Pega o novo texto, garantindo que não seja vazio
-    const newText = editInput.value.trim() || 'Item vazio'; 
-
-    // 2. Reverte para o elemento de texto (span)
-    const newTodoTextElement = buildElement('span', ['todo-list__text'], newText);
-    
-    // 3. Aplica o estilo de concluído/riscado (se o checkbox estiver marcado)
-    const checkbox = currentTodo.querySelector('.todo-list__checkbox');
-    if (checkbox.checked) {
-        newTodoTextElement.style.textDecoration = 'line-through';
-        newTodoTextElement.style.opacity = '0.5';
-    }
-
-    // 4. Substitui o input pelo novo span de texto
+    const newTodoTextElement = buildElement('span', ['todo-list__text'], text);
     const checkboxContentWrapper = currentTodo.querySelector('.todo-list__checkbox-content-wrapper');
     checkboxContentWrapper.replaceChild(newTodoTextElement, editInput);
 
-    // 5. Reaparece o botão de opções (três pontos)
     const moreButton = currentTodo.querySelector('[data-action="more"]');
-    moreButton.classList.remove('hidden');
+    moreButton.classList.remove('is-hidden');
 };
 
 const handleEditTodo = currentTodo => {
-    // 1. Fecha o dropdown aberto para evitar interrupção
+
     closeDropDowns();
 
     const todoTextElement = currentTodo.querySelector('.todo-list__text');
     const originalText = todoTextElement.textContent;
 
-    // 2. Cria o campo de input de edição
-    const editInput = document.createElement('input');
+    const editInput = buildElement('input', ['todo-list__edit-input'], originalText);
     editInput.type = 'text';
-    editInput.classList.add('todo-list__edit-input');
-    editInput.value = originalText;
 
-    // 3. Substitui o texto pelo input
     const checkboxContentWrapper = currentTodo.querySelector('.todo-list__checkbox-content-wrapper');
     checkboxContentWrapper.replaceChild(editInput, todoTextElement);
 
     editInput.focus();
-    
-    // 4. Adicionar evento para salvar ao pressionar Enter
+
     editInput.addEventListener('keypress', event => {
         if (event.key === 'Enter') {
-            event.preventDefault(); 
-            // O blur será disparado, que chamará saveEditedTodo.
-            editInput.blur(); 
+            event.preventDefault();
+
+            editInput.blur();
         }
     });
 
-    // 5. Adicionar evento para salvar ao perder o foco (blur)
     editInput.addEventListener('blur', () => {
-        // Usa setTimeout para dar tempo para o evento 'keypress' finalizar, 
-        // e garante que a edição não seja salva duas vezes
-        setTimeout(() => saveEditedTodo(currentTodo, editInput), 0);
+        setTimeout(() => saveEditedTodo(currentTodo, editInput, originalText), 0);
     });
 
-    // 6. Ocultar o botão de opções (três pontos)
+
     const moreButton = currentTodo.querySelector('[data-action="more"]');
-    moreButton.classList.add('hidden');
+    moreButton.classList.add('is-hidden');
 };
 
-
-// Remova: todoList.addEventListener('click', handleMoreButtonClick);
-
 const handleTodoActionClick = event => {
+
     const currentTodo = event.target.closest('.todo-list__item');
     if (!currentTodo) return;
 
@@ -310,9 +290,6 @@ const handleTodoActionClick = event => {
     const action = actionButton.getAttribute('data-action');
 
     switch (action) {
-        case 'more':
-            handleDropDownVisibility(currentTodo);
-            break;
 
         case 'edit':
             handleEditTodo(currentTodo);
@@ -323,44 +300,48 @@ const handleTodoActionClick = event => {
             currentTodo.remove();
             updateContentVisibility();
             break;
-            
+
         default:
             return;
     }
 };
 
-// Adicione este novo listener unificado
+const handleGlobalKeyDown = event => {
+    if (event.key === 'Escape') {
+
+        if (!newTodoModalElement.classList.contains('is-hidden')) {
+            toggleElement(newTodoModalElement, true);
+            newTodoInput.value = "";
+            return
+        }
+        
+        closeDropDowns();
+        
+        const activeEditInput = todoList.querySelector('.todo-list__edit-input');
+        if (activeEditInput) {
+            activeEditInput.value="";
+            activeEditInput.blur(); // O evento blur que você já tem cuidará de restaurar o texto
+        }
+    }
+};
+
+const todoAppHeading = buildElement('h2', ['todo-app__heading'], todayShortFormat);
+todoAppContainer.prepend(todoAppHeading);
+
+updateContentVisibility();
+
 todoList.addEventListener('click', handleTodoActionClick);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 openCreateTodoModalButton.addEventListener('click', openNewTodoModal);
 
-closeCreateTodoModalButton.addEventListener('click', () => toggleElement(newTodoModalElement));
+// closeCreateTodoModalButton.addEventListener('click', () =>  toggleElement(newTodoModalElement, true));
 
-newTodoModalElement.addEventListener('click', handleOutsideClickToCloseModal);
+newTodoModalElement.addEventListener('click', handleClickToCloseModal);
 
-newTodoForm.addEventListener('submit', handleNewItemSubmit);
+newTodoForm.addEventListener('submit', handleNewTodoSubmit);
 
-// todoList.addEventListener('click', handleMoreButtonClick);
+// todoList.addEventListener('click', handleMoreButtonClick); 
 
-document.addEventListener('click', handleOutsideClickToCloseDropdown);
+document.addEventListener('click', handleDropdownVisibilityByClick);
+
+document.addEventListener('keydown', handleGlobalKeyDown);

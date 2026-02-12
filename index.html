@@ -5,7 +5,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Hands On</title>
+    <title>Free Todo</title>
+
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
 
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="style.css">
@@ -22,8 +24,8 @@
 </head>
 
 <body>
-    
-    <article id="create-todo-modal" class="create-todo-modal hidden">
+
+    <article id="create-todo-modal" class="create-todo-modal is-hidden">
 
         <div class="create-todo-modal__container">
 
@@ -51,7 +53,7 @@
             <footer class="create-todo-modal__footer">
 
                 <button type="submit" form="new-todo-form" class="button button--submit button--primary">
-                    <span class="label label--bg label--primary ">
+                    <span class="label label--lg label--primary ">
                         Criar novo item
                     </span>
 
@@ -89,14 +91,14 @@
             <p class="todo-app__empty-message"><i>Hora de adicionar algo novo!</i></p>
         </article>
 
-        <ul class="todo-list todo-list--hidden">           
+        <ul class="todo-list">
 
         </ul>
 
     </main>
 
     <script src="script.js"></script>
-    
+
 </body>
 
 </html>

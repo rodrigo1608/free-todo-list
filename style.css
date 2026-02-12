@@ -20,7 +20,7 @@ input {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 100%;
+    max-width: 100%;    
     height: 10rem;
     padding: 0 2rem;
 }
@@ -38,11 +38,11 @@ input {
     justify-content: start;
     gap: .4rem;
     padding: .4rem;
-    transition: all ease .1s;
+    transition: all ease .2s;
 }
 
 .button:active {
-    background-color: var(--highlight) !important;
+    background-color: var(--highlight) !important;    
 }
 
 .button--primary {
@@ -132,16 +132,16 @@ input {
 .create-todo-modal__header::after {
     content: "";
     position: absolute;
-    display: block;
-    bottom: 0;
-    width: 90%;
+    display: flex;
+    bottom: 0; 
+    left: 1.2rem;
+    right: 1.2rem;
     height: 1px;
     background-color: var(--gray);
 }
 
-.create-todo-modal__body,
-.create-todo-modal__footer {
-    padding: 1.2rem 2rem;
+.create-todo-modal__body{
+    padding:3rem 1.2rem;
 }
 
 .create-todo-modal__footer {
@@ -149,14 +149,14 @@ input {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding:  2rem;
 }
 
 .create-todo-modal__heading {
     font-size: 2.4rem;
     font-weight: 600;
     text-align: center;
-    letter-spacing: .2rem;
-    padding-top: 1.2rem
+    letter-spacing: .2rem;    
 }
 
 .button--close {
@@ -171,6 +171,7 @@ input {
     border-radius: 2rem;
     padding: 1.2rem 2rem;
     transition: padding .2s ease;
+    cursor: auto;
 }
 
 .create-todo-modal__input:focus {
@@ -182,7 +183,7 @@ input {
 
 .button--submit {
     border-radius: 4rem;
-    padding: .8rem 2rem;
+    padding: 1rem 2rem;
     gap: .4rem;
 }
 
@@ -200,7 +201,7 @@ input {
     color: var(--darkgray);
 }
 
-.label--bg {
+.label--lg {
     text-transform: uppercase;
     letter-spacing: .2rem;
 }
@@ -227,7 +228,7 @@ input {
 .todo-app__empty-notice {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center;    
 }
 
 .todo-app__empty-img {
@@ -264,6 +265,8 @@ input {
     align-items: center;
     justify-content: space-between;
     gap: .8rem;
+    word-break: break-word;    
+    overflow-wrap: break-word;
 }
 
 .todo-list__checkbox {
@@ -293,7 +296,6 @@ input {
     font-size: 1.4rem;
     font-weight: 500;
     color: var(--dark-gray);
-    overflow-wrap: break-word;
 }
 
 .todo-list__checkbox:checked+.todo-list__text {
@@ -315,33 +317,37 @@ input {
 }
 
 .todo-list__dropdown-option {
-    padding: 1.2rem 2rem;
     border-radius: 1.2rem;
     border-radius: 0;
-    padding: 1.2rem 2rem;
-    justify-content: start;
-    width: 100%;
+    padding: 1.2rem 2rem;    
+    width: 100%;    
 }
 
 .todo-list__dropdown-option:hover {
     background-color: var(--gray);
 }
 
-/* Adicione esta classe ao seu style.css */
 .todo-list__edit-input {
-    flex-grow: 1; /* Permite que o campo ocupe o espaço disponível */
-    border: 1px solid var(--blue); /* Borda para destaque */
-    border-radius: 1rem;
-    padding: .4rem .8rem;
+    flex-grow: 1;    
+    border-radius: 2rem;
+    padding: 1.2rem 2rem;
+    transition: padding .2s ease;
     font-size: 1.4rem;
     font-family: 'Work Sans';
     font-weight: 500;
     color: var(--dark-gray);
-    outline: none; /* Remove o outline padrão do focus */
-    /* Garante que o input apareça no mesmo lugar que o texto */
-    margin-left: 0.8rem; /* Para compensar o gap do checkbox wrapper */
+    outline: none; 
+    margin-left: 0.8rem;
+    cursor: auto;
 }
 
-.hidden {
+.todo-list__edit-input:focus {
+    outline: 1px solid #2FA1C0;
+    outline-offset: 1px;
+    border-color: #2FA1C0;
+    padding: 1.2rem 2.4rem;
+}
+
+.is-hidden {
     display: none !important;
 }
