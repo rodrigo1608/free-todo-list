@@ -219,7 +219,7 @@ input {
 }
 
 .todo-app__heading {
-    font-size: 1.6rem;
+    /* font-size: 1.6rem; */
     text-transform: uppercase;
     font-weight: 600;
     text-align: center;
