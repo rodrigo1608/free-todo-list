@@ -27,6 +27,25 @@ const createTodoObject = text => {
 
 }
 
+const updateTodoData = (todoElement, changes = {}) => {
+
+    id = Number(todoElement.dataset.id);
+    const todoToUpdate = todos.find(todo => todo.id === id);
+
+    if (!todoToUpdate) return;
+
+    if (changes.text !== undefined && changes.text.trim() === "") {
+        delete changes.text;
+    }
+
+    if (!Object.keys(changes).length) return todoToUpdate;
+
+    Object.assign(todoToUpdate, changes);
+
+    return todoToUpdate;
+
+}
+
 const toggleElement = (element, forceValue) => element.classList.toggle('is-hidden', forceValue);
 
 const updateContentVisibility = () => {
@@ -39,7 +58,7 @@ const updateContentVisibility = () => {
 
 const buildElement = (elementName, classNames = [], options = {}) => {
 
-    const element = document.createElement(elementName);    
+    const element = document.createElement(elementName);
     const safeOptions = options || {};
     const { content, ...attributes } = safeOptions;
 
@@ -53,7 +72,7 @@ const buildElement = (elementName, classNames = [], options = {}) => {
     }
 
     Object.entries(attributes).forEach(([key, value]) => {
-        
+
         if (typeof value === 'boolean') {
             element[key] = value;
         } else {
@@ -65,10 +84,10 @@ const buildElement = (elementName, classNames = [], options = {}) => {
 }
 
 const buildCheckboxContent = text => {
- 
+
     const checkboxContentWrapper = buildElement('div', ['todo-list__checkbox-content-wrapper']);
-    const checkboxInput = buildElement('input', ['todo-list__checkbox'], {type:'checkbox'});
-    const todo = buildElement('span', ['todo-list__text'], {content:text});
+    const checkboxInput = buildElement('input', ['todo-list__checkbox'], { type: 'checkbox', 'data-action': 'check' });
+    const todo = buildElement('span', ['todo-list__text'], { content: text });
 
     checkboxContentWrapper.append(checkboxInput, todo);
 
@@ -100,13 +119,13 @@ const buildButton = buttonAttributes => {
         labelClasses
     } = buttonAttributes;
 
-    const actionButton = buildElement('button', classNamesButton, {'data-action':iconId});
+    const actionButton = buildElement('button', classNamesButton, { 'data-action': iconId });
     const svgElement = buildSVGIncon(classNamesIcon, iconId);
 
     actionButton.appendChild(svgElement);
 
     if (labelText) {
-        const actionButtonLabel = buildElement('span', labelClasses, {content:labelText});
+        const actionButtonLabel = buildElement('span', labelClasses, { content: labelText });
         actionButton.append(actionButtonLabel);
     }
 
@@ -145,8 +164,8 @@ const buildDropDownOptions = () => {
 
 const buildTodo = ({ id, text }) => {
 
-    const todo = buildElement('li', ['todo-list__item'],{'data-id':id});
-    const checkboxContent = buildCheckboxContent(text);   
+    const todo = buildElement('li', ['todo-list__item'], { 'data-id': id });
+    const checkboxContent = buildCheckboxContent(text);
 
     const todoOptionsButtonAttributes = {
         iconId: 'more',
@@ -198,34 +217,29 @@ const updateDropDownVisibility = currentTodo => {
 
 const finalizeTodoEdit = (currentTodo, editInput) => {
 
-    const todoId = Number(currentTodo.dataset.id);
-        
-    todoToUpdate = todos.find(todo => todo.id === todoId);
-    
-    if(!todoToUpdate) return;
-    
-    const newText = editInput.value || todoToUpdate.text;
+    const updatedTodoData = updateTodoData(currentTodo, {text:editInput.value});
+    const newText = updatedTodoData.text;
 
-    const newTodoTextElement = buildElement('span', ['todo-list__text'], {content:newText});
+    const newTodoTextElement = buildElement('span', ['todo-list__text'], { content: newText });
     const checkboxContentWrapper = currentTodo.querySelector('.todo-list__checkbox-content-wrapper');
 
     checkboxContentWrapper.replaceChild(newTodoTextElement, editInput);
 
     const moreButton = currentTodo.querySelector('[data-action="more"]');
     moreButton.classList.remove('is-hidden');
-};
+}
 
 const enableTodoEdit = todoElement => {
 
     closeDropDowns();
-        
-    const currentTodo = todos.find(todo => todo.id === Number(todoElement.dataset.id));
-    
-    if(!currentTodo) return;
-    
-    const editInputAttributes = {content: currentTodo.text, type:'text'}
 
-    const editInput = buildElement('input', ['todo-list__edit-input'], editInputAttributes);    
+    const currentTodo = todos.find(todo => todo.id === Number(todoElement.dataset.id));
+
+    if (!currentTodo) return;
+
+    const editInputAttributes = { content: currentTodo.text, type: 'text' }
+
+    const editInput = buildElement('input', ['todo-list__edit-input'], editInputAttributes);
 
     const checkboxContentWrapper = todoElement.querySelector('.todo-list__checkbox-content-wrapper');
     const todoTextElement = todoElement.querySelector('.todo-list__text');
@@ -249,32 +263,32 @@ const enableTodoEdit = todoElement => {
 
     const moreButton = todoElement.querySelector('[data-action="more"]');
     moreButton.classList.add('is-hidden');
-};
+}
 
 const handleNewTodoSubmit = event => {
-    
+
     event.preventDefault();
-    
+
     const todoText = newTodoInput.value;
-    
+
     if (!todoText) {
         toggleElement(newTodoModalElement, true);
         newTodoInput.value = "";
         return
     }
-    
+
     const todoObject = createTodoObject(todoText);
-    
+
     const newTodo = buildTodo(todoObject);
-    
+
     todoList.append(newTodo);
-    
+
     updateContentVisibility();
-    
+
     toggleElement(newTodoModalElement);
-    
+
     newTodoInput.value = "";
-    
+
 }
 
 const handleClickToCloseModal = event => {
@@ -287,9 +301,9 @@ const handleClickToCloseModal = event => {
 }
 
 const handleDropdownVisibility = event => {
-    
+
     const currentTodoOptionsButton = event.target.closest('[data-action="more"]');
-    
+
     if (currentTodoOptionsButton) {
         const currentTodo = event.target.closest('.todo-list__item');
         updateDropDownVisibility(currentTodo);
@@ -308,18 +322,24 @@ const handleTodoActionClick = event => {
     const currentTodo = event.target.closest('.todo-list__item');
     if (!currentTodo) return;
 
-    const actionButton = event.target.closest('[data-action]');
-    if (!actionButton) return;
+    const actionElement = event.target.closest('[data-action]');
 
-    const action = actionButton.getAttribute('data-action');
+    if (!actionElement) return;
+
+    const action = actionElement.getAttribute('data-action');
 
     switch (action) {
+        case 'check':
+            updateTodoData(currentTodo, { isDone: actionElement.checked })
+            break;
 
-        case 'edit':            
+        case 'edit':
             enableTodoEdit(currentTodo);
             break;
 
-        case 'delete':            
+        case 'delete':
+            const indexOfTodoData = todos.findIndex(todo => todo.id === Number(currentTodo.dataset.id));
+            if (indexOfTodoData !== -1) todos.splice(indexOfTodoData, 1);
             currentTodo.remove();
             updateContentVisibility();
             break;
@@ -348,7 +368,7 @@ const handleGlobalKeyDown = event => {
     }
 };
 
-const todoAppHeading = buildElement('h2', ['todo-app__heading'], {content:todayShortFormat});
+const todoAppHeading = buildElement('h2', ['todo-app__heading'], { content: todayShortFormat });
 todoAppContainer.prepend(todoAppHeading);
 
 updateContentVisibility();
