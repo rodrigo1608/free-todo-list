@@ -29,18 +29,21 @@ const createTodoObject = text => {
 
 const updateTodoData = (todoElement, changes = {}) => {
 
-    id = Number(todoElement.dataset.id);
+    const id = Number(todoElement.dataset.id);
     const todoToUpdate = todos.find(todo => todo.id === id);
 
     if (!todoToUpdate) return;
 
+    let finalChanges = changes;
+
     if (changes.text !== undefined && changes.text.trim() === "") {
-        delete changes.text;
+       const{ text, ...rest } = changes;
+       finalChanges = rest;
     }
+    
+    if (!Object.keys(finalChanges).length) return todoToUpdate;
 
-    if (!Object.keys(changes).length) return todoToUpdate;
-
-    Object.assign(todoToUpdate, changes);
+    Object.assign(todoToUpdate, finalChanges);
 
     return todoToUpdate;
 
@@ -265,6 +268,15 @@ const enableTodoEdit = todoElement => {
     moreButton.classList.add('is-hidden');
 }
 
+const deleteTodo = currentTodo => {
+
+    const indexOfTodoData = todos.findIndex(todo => todo.id === Number(currentTodo.dataset.id));
+
+    if (indexOfTodoData !== -1) todos.splice(indexOfTodoData, 1);
+    currentTodo.remove();
+    updateContentVisibility();
+}
+
 const handleNewTodoSubmit = event => {
 
     event.preventDefault();
@@ -338,15 +350,13 @@ const handleTodoActionClick = event => {
             break;
 
         case 'delete':
-            const indexOfTodoData = todos.findIndex(todo => todo.id === Number(currentTodo.dataset.id));
-            if (indexOfTodoData !== -1) todos.splice(indexOfTodoData, 1);
-            currentTodo.remove();
-            updateContentVisibility();
+            deleteTodo(currentTodo);
             break;
 
         default:
             return;
     }
+    console.log(todos);
 };
 
 const handleGlobalKeyDown = event => {
