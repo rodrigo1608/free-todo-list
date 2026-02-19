@@ -20,7 +20,7 @@ input {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 100%;    
+    max-width: 100%;
     height: 10rem;
     padding: 0 2rem;
 }
@@ -41,12 +41,22 @@ input {
     transition: all ease .2s;
 }
 
-.button:active {
-    background-color: var(--highlight) !important;    
-}
-
 .button--primary {
     background-color: var(--blue);
+}
+
+.button--dropdown {
+    border-radius: 0;
+    padding: 1.2rem 2rem;
+}
+
+.button--edit-option {
+    border-radius: 2.4rem;
+    padding: .8rem 1.2rem;
+}
+
+.button:active {
+    background-color: var(--highlight) !important;
 }
 
 .button--primary:hover {
@@ -59,6 +69,43 @@ input {
 
 .button--secondary:hover {
     background-color: var(--gray);
+}
+
+.button:active .icon--primary,
+.button:active .icon--danger {
+    fill: var(--dark-gray);
+}
+
+.button:active .label--primary {
+    color: var(--dark-gray);
+}
+
+.button--new-todo {
+    padding: .8rem;
+}
+
+.button--submit, .button--edit-option {
+    border-radius: 4rem;
+    padding: 1rem 2rem;
+    gap: .4rem;
+}
+
+.label {
+    font-family: 'Jost';
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: .1rem;
+    color:var(--dark-gray);
+}
+
+.label--primary {
+    color: var(--light);
+}
+
+.label--upper {
+    text-transform: uppercase;
+    letter-spacing: .2rem;
+    font-weight: 600;
 }
 
 .icon {
@@ -81,15 +128,6 @@ input {
 
 .icon--danger {
     fill: var(--red);
-}
-
-.button:active .icon--primary,
-.button:active .icon--danger {
-    fill: var(--dark-gray);
-}
-
-.button--new-todo {
-    padding: .8rem;
 }
 
 .create-todo-modal {
@@ -133,15 +171,15 @@ input {
     content: "";
     position: absolute;
     display: flex;
-    bottom: 0; 
+    bottom: 0;
     left: 1.2rem;
     right: 1.2rem;
     height: 1px;
     background-color: var(--gray);
 }
 
-.create-todo-modal__body{
-    padding:3rem 1.2rem;
+.create-todo-modal__body {
+    padding: 3rem 1.2rem;
 }
 
 .create-todo-modal__footer {
@@ -149,14 +187,14 @@ input {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding:  2rem;
+    padding: 2rem;
 }
 
 .create-todo-modal__heading {
     font-size: 2.4rem;
     font-weight: 600;
     text-align: center;
-    letter-spacing: .2rem;    
+    letter-spacing: .2rem;
 }
 
 .button--close {
@@ -181,30 +219,6 @@ input {
     padding: 1.2rem 2.4rem;
 }
 
-.button--submit {
-    border-radius: 4rem;
-    padding: 1rem 2rem;
-    gap: .4rem;
-}
-
-.label {
-    font-family: 'Jost';
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.label--primary {
-    color: var(--light);
-}
-
-.button:active .label--primary {
-    color: var(--darkgray);
-}
-
-.label--lg {
-    text-transform: uppercase;
-    letter-spacing: .2rem;
-}
 
 .todo-app {
     border-radius: 2rem;
@@ -228,7 +242,7 @@ input {
 .todo-app__empty-notice {
     display: flex;
     flex-direction: column;
-    align-items: center;    
+    align-items: center;
 }
 
 .todo-app__empty-img {
@@ -261,12 +275,12 @@ input {
 }
 
 .todo-list__checkbox-content-wrapper {
-    display: flex;
     align-items: center;
-    justify-content: space-between;
+    display: flex;
+    flex: 1;
     gap: .8rem;
-    word-break: break-word;    
     overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .todo-list__checkbox {
@@ -295,7 +309,7 @@ input {
 .todo-list__text {
     font-size: 1.4rem;
     font-weight: 500;
-    color: var(--dark-gray);
+    /* color: var(--dark-gray); */
 }
 
 .todo-list__checkbox:checked+.todo-list__text {
@@ -313,22 +327,16 @@ input {
     position: absolute;
     top: 4rem;
     z-index: 1000;
-    overflow:hidden;
+    overflow: hidden;
 }
 
-.todo-list__dropdown-option {
-    border-radius: 1.2rem;
-    border-radius: 0;
-    padding: 1.2rem 2rem;    
-    width: 100%;    
-}
-
-.todo-list__dropdown-option:hover {
-    background-color: var(--gray);
+.todo-list__edit-container{    
+    width: 100%;
+    padding:1.2rem;
 }
 
 .todo-list__edit-input {
-    flex-grow: 1;    
+    width: 100%;
     border-radius: 2rem;
     padding: 1.2rem 2rem;
     transition: padding .2s ease;
@@ -336,8 +344,9 @@ input {
     font-family: 'Work Sans';
     font-weight: 500;
     color: var(--dark-gray);
-    outline: none; 
+    outline: none;
     margin-left: 0.8rem;
+    margin-bottom: 0.8rem;
     cursor: auto;
 }
 
@@ -346,6 +355,12 @@ input {
     outline-offset: 1px;
     border-color: #2FA1C0;
     padding: 1.2rem 2.4rem;
+}
+
+.todo-list__edit-buttons-container {
+    display: flex;
+    gap: .2rem;    
+    justify-content: end;
 }
 
 .is-hidden {
