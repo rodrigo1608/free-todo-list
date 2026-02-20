@@ -10,7 +10,9 @@ const newTodoForm = document.getElementById('new-todo-form');
 const today = new Date();
 const todayShortFormat = today.toLocaleString('pt-BR', { dateStyle: 'short' });
 
-const todos = [];
+const todos = JSON.parse(localStorage.getItem('todoData')) || [];
+
+const setTodoStorage = () => localStorage.setItem('todoData', JSON.stringify(todos));
 
 const createTodoObject = text => {
 
@@ -23,9 +25,12 @@ const createTodoObject = text => {
 
     todos.push(todoObject);
 
+    setTodoStorage();
+
     return todoObject;
 
 }
+
 
 const toggleElement = (element, forceValue) => element.classList.toggle('is-hidden', forceValue);
 
@@ -36,6 +41,27 @@ const updateContentVisibility = () => {
     toggleElement(emptyNotice, hasItems);
     toggleElement(todoList, !hasItems);
 }
+
+const renderSavedTodos = () => {
+    // Percorre o array que veio do LocalStorage
+    todos.forEach(todoObject => {
+        // Cria o elemento li usando sua função buildTodo
+        const todoElement = buildTodo(todoObject);
+
+        // Verifica se o dado diz que está pronto e marca o checkbox
+        if (todoObject.isDone) {
+            const checkbox = todoElement.querySelector('.todo-list__checkbox');
+            if (checkbox) checkbox.checked = true;
+        }
+
+        // Adiciona na lista física (DOM)
+        todoList.append(todoElement);
+    });
+
+    // Atualiza se mostra a mensagem de "vazio" ou a lista
+    updateContentVisibility();
+};
+
 
 const buildElement = (elementName, classNames = [], options = {}) => {
 
@@ -165,7 +191,13 @@ const buildTodo = ({ id, text }) => {
 
 const buildTodoEditor = currentTodo => {
 
-    const editInputAttributes = { content: currentTodo.text, type: 'text', id: "edit-todo-input", name: 'editTodoInput' }
+    const editInputAttributes = {
+        content: currentTodo.text,
+        type: 'text',
+        id: "edit-todo-input",
+        name: 'editTodoInput',
+        autocomplete: 'off'
+    }
 
     const editorcontainer = buildElement('form', ['todo-list__edit-container'], { id: "edit-todo-form" });
     const editInput = buildElement('input', ['todo-list__edit-input'], editInputAttributes);
@@ -202,6 +234,7 @@ const buildTodoEditor = currentTodo => {
 const openNewTodoModal = () => {
     toggleElement(newTodoModalElement, false);
     newTodoInput.focus();
+    closeEditors();
 }
 
 const closeDropDowns = () => {
@@ -210,10 +243,20 @@ const closeDropDowns = () => {
     });
 }
 
+const closeEditors = () => {
+    todoList.querySelectorAll('.todo-list__item').forEach(todo => {
+        const isEditing = todo.querySelector('.todo-list__edit-container');
+
+        if (isEditing) {
+            finalizeTodoEdit(todo, false);
+        }
+    });
+}
+
 const findTodoByElement = ({ dataset }) => todos.find(todo => todo.id === Number(dataset.id));
 
 const updateTodoData = (todoElement, changes = {}) => {
-   
+
     const todoToUpdate = findTodoByElement(todoElement);
 
     if (!todoToUpdate) return;
@@ -228,6 +271,7 @@ const updateTodoData = (todoElement, changes = {}) => {
     if (!Object.keys(finalChanges).length) return todoToUpdate;
 
     Object.assign(todoToUpdate, finalChanges);
+    setTodoStorage();
 
     return todoToUpdate;
 
@@ -263,11 +307,12 @@ const finalizeTodoEdit = (todoElement, shouldSave = true) => {
     const editInput = todoEditor.querySelector('.todo-list__edit-input');
 
     let displayText = findTodoByElement(todoElement).text;
-    const shouldUpdate = shouldSave || editInput.value.trim() !=="";
+    const shouldUpdate = shouldSave || editInput.value.trim() !== "";
 
     if (shouldUpdate) {
         const updatedTodoData = updateTodoData(todoElement, { text: editInput.value });
         displayText = updatedTodoData.text;
+        setTodoStorage();
     }
 
     const newTodoTextElement = buildElement('span', ['todo-list__text'], { content: displayText });
@@ -286,6 +331,7 @@ const finalizeTodoEdit = (todoElement, shouldSave = true) => {
 const enableTodoEdit = todoElement => {
 
     closeDropDowns();
+    closeEditors();
 
     const currentTodo = todos.find(todo => todo.id === Number(todoElement.dataset.id));
 
@@ -314,6 +360,7 @@ const deleteTodo = currentTodo => {
 
     if (indexOfTodoData !== -1) todos.splice(indexOfTodoData, 1);
     currentTodo.remove();
+    setTodoStorage();
     updateContentVisibility();
 }
 
@@ -370,7 +417,7 @@ const handleDropdownVisibility = event => {
 }
 
 const handleTodoActionClick = event => {
-    
+
     const currentTodo = event.target.closest('.todo-list__item');
     if (!currentTodo) return;
 
@@ -381,7 +428,7 @@ const handleTodoActionClick = event => {
     const action = actionElement.getAttribute('data-action');
 
     switch (action) {
-        case 'check':            
+        case 'check':
             updateTodoData(currentTodo, { isDone: actionElement.checked })
             break;
 
@@ -407,24 +454,18 @@ const handleTodoActionClick = event => {
 };
 
 const handleGlobalKeyDown = event => {
-    
+
     if (event.key === 'Escape') {
 
         if (!newTodoModalElement.classList.contains('is-hidden')) {
+
             toggleElement(newTodoModalElement, true);
             newTodoInput.value = "";
             return
         }
 
         closeDropDowns();
-
-        const activeEditInput = todoList.querySelector('.todo-list__edit-input');
-
-        if (activeEditInput) {            
-            const currentTodo = activeEditInput.closest('.todo-list__item');    
-            
-            finalizeTodoEdit(currentTodo, false);
-        }
+        closeEditors();
     }
 };
 
@@ -444,3 +485,5 @@ newTodoForm.addEventListener('submit', handleNewTodoSubmit);
 document.addEventListener('click', handleDropdownVisibility);
 
 document.addEventListener('keydown', handleGlobalKeyDown);
+
+renderSavedTodos();
